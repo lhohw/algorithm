@@ -9,6 +9,7 @@
 - [Prefix-Sum](./prefix-sum)
 - [Priorty-Queue](./priority-queue)
 - [Dynamic-Programming](./dynamic-programming)
+- [String](./string)
 - [Graph](./graph)
 - [Tree](./tree)
 - [Bipartite-Matching](./bipartite-matching)
