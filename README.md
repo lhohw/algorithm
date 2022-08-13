@@ -12,5 +12,6 @@
 - [String](./string)
 - [Graph](./graph)
 - [Tree](./tree)
+- [Segment-Tree](./segment-tree)
 - [Bipartite-Matching](./bipartite-matching)
 - [Game-Theory](./game-theory)
