@@ -11,6 +11,7 @@
 - [Priorty-Queue](./priority-queue)
 - [Dynamic-Programming](./dynamic-programming)
 - [String](./string)
+- [Suffix-Array](./suffix-array)
 - [Graph](./graph)
 - [Tree](./tree)
 - [Segment-Tree](./segment-tree)
