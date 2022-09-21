@@ -16,6 +16,7 @@
 - [String](./string)
 - [Suffix-Array](./suffix-array)
 - [Graph](./graph)
+- [Binary-Search](./binary-search)
 - [Tree](./tree)
 - [Segment-Tree](./segment-tree)
 - [Bipartite-Matching](./bipartite-matching)
