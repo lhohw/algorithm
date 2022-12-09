@@ -13,6 +13,7 @@
 - [Linked-list](./linked-list)
 - [Priorty-Queue](./priority-queue)
 - [Dynamic-Programming](./dynamic-programming)
+- [Disjoint-Set](./disjoint-set)
 - [String](./string)
 - [Suffix-Array](./suffix-array)
 - [Graph](./graph)
