@@ -17,6 +17,7 @@
 - [String](./string)
 - [Suffix-Array](./suffix-array)
 - [Graph](./graph)
+- [Dijkstra](./dijkstra)
 - [Binary-Search](./binary-search)
 - [Tree](./tree)
 - [Segment-Tree](./segment-tree)
