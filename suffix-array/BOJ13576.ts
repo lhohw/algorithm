@@ -4,21 +4,22 @@ import { readFileSync } from "fs";
 class SuffixArray {
   private perm: number[];
   private group: number[];
-  private tmpArray: number[];
+  private len: number;
   private t = 1;
   constructor(private S: string, private n: number) {
+    const A = "A".charCodeAt(0);
     this.perm = new Array(n).fill(undefined).map((_, i) => i);
     this.group = S.split("")
-      .map((ch) => ch.charCodeAt(0))
-      .concat(-1);
-    this.tmpArray = [...this.perm];
+      .map((ch) => ch.charCodeAt(0) - A + 1)
+      .concat(0);
+    this.len = Math.max(26, n) + 1;
   }
   public getSuffixArray() {
     const { n, perm } = this;
     while (this.t < n) {
-      this.mergeSort();
-      const newGroup = new Array(n + 1).fill(-1);
-      newGroup[perm[0]] = 0;
+      this.stableCountingSort();
+      const newGroup = new Array(n + 1).fill(0);
+      newGroup[perm[0]] = 1;
       for (let i = 1; i < n; i++) {
         newGroup[perm[i]] =
           newGroup[perm[i - 1]] + this.compare(perm[i - 1], perm[i]);
@@ -31,36 +32,25 @@ class SuffixArray {
       group: this.group,
     };
   }
-  private mergeSort() {
-    this._mergeSort(0, this.n);
-  }
-  private _mergeSort(left: number, right: number) {
-    const { perm, tmpArray } = this;
-    if (left + 1 === right) return;
+  private stableCountingSort() {
+    const { n, len, perm, group, t } = this;
+    const cnt = new Array(len).fill(0);
+    const idx = new Array(n + 1).fill(0);
 
-    const mid = Math.floor((left + right) / 2);
+    for (let i = 0; i < n; i++) cnt[group[Math.min(i + t, n)]]++;
+    for (let i = 1; i < len; i++) cnt[i] += cnt[i - 1];
+    for (let i = n - 1; ~i; i--) idx[--cnt[group[Math.min(i + t, n)]]] = i;
 
-    this._mergeSort(left, mid);
-    this._mergeSort(mid, right);
+    for (let i = 0; i < len; i++) cnt[i] = 0;
 
-    let l = left,
-      r = mid,
-      k = left;
-    while (l < mid && r < right) {
-      if (this.compare(perm[l], perm[r])) tmpArray[k++] = perm[l++];
-      else tmpArray[k++] = perm[r++];
-    }
-    while (l < mid) tmpArray[k++] = perm[l++];
-    while (r < right) tmpArray[k++] = perm[r++];
-
-    for (let i = left; i < right; i++) {
-      perm[i] = tmpArray[i];
-    }
+    for (let i = 0; i < n; i++) cnt[group[i]]++;
+    for (let i = 1; i < len; i++) cnt[i] += cnt[i - 1];
+    for (let i = n - 1; ~i; i--) perm[--cnt[group[idx[i]]]] = idx[i];
   }
   private compare(a: number, b: number) {
-    const { t, group } = this;
+    const { t, group, n } = this;
     if (group[a] !== group[b]) return group[a] < group[b];
-    return group[a + t] < group[b + t];
+    return group[Math.min(a + t, n)] < group[Math.min(b + t, n)];
   }
 }
 
@@ -140,7 +130,7 @@ const countSubstring = (
 ) => {
   let ret = 1;
   const idx = n - len;
-  const permIdx = group[idx];
+  const permIdx = group[idx] - 1;
   for (let i = permIdx + 1; i < n; i++) {
     if (lcp[i] >= len) {
       const precalc = dp[i];
