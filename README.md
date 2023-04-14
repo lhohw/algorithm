@@ -5,6 +5,7 @@
 ## :clipboard: List
 
 - [Implementation](./implementation)
+- [Simulation](./simulation)
 - [Mathematics](./mathematics)
 - [Brute-Force](./brute-force)
 - [Greedy-Method](./greedy-method)
