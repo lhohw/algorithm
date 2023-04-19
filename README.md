@@ -8,6 +8,7 @@
 - [Simulation](./simulation)
 - [Mathematics](./mathematics)
 - [Brute-Force](./brute-force)
+- [Divide-And-Conquer](./divide-and-conquer)
 - [Greedy-Method](./greedy-method)
 - [Prefix-Sum](./prefix-sum)
 - [Queue-Stack-Deque](./queue_stack_deque)
