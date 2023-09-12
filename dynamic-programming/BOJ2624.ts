@@ -13,7 +13,6 @@ const cache: number[][] = new Array(k)
 const print = () => console.log(solve().toString());
 
 const solve = () => {
-  coins.sort((a, b) => b[0] - a[0]);
   const ret = count(0, T);
   return ret;
 };
