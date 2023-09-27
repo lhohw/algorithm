@@ -11,6 +11,7 @@ class LazyPropagation {
     this.array = new Array(this.N).fill(0);
     this.switched = new Array(this.N).fill(0);
   }
+
   update(left: number, right: number) {
     this._update(left, right, 0, this.n, 1);
   }
@@ -63,6 +64,7 @@ class LazyPropagation {
   private propagate(idx: number, nodeLeft: number, nodeRight: number) {
     const { switched } = this;
     if (!switched[idx]) return;
+
     this.flip(idx, nodeLeft, nodeRight);
     switched[idx] = 0;
     if (!this.isLeaf(nodeLeft, nodeRight)) {
@@ -100,7 +102,7 @@ const init = (input: string) => {
 const query = (input: string) => {
   const [flag, s, t] = input.split(" ").map(Number);
   if (flag === 0) lazyPropagation.update(s - 1, t);
-  else ret += lazyPropagation.query(s - 1, t) + "\n";
+  else ret += `${lazyPropagation.query(s - 1, t)}\n`;
 };
 
 const print = () => console.log(ret.trimEnd());
