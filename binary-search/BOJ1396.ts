@@ -2,10 +2,11 @@
 import { createInterface } from "readline";
 
 class Range {
+  private done = false;
   constructor(public lo: number, public hi: number) {}
   isDone() {
     const { lo, hi } = this;
-    return lo + 1 === hi;
+    return this.done || (this.done = lo + 1 === hi);
   }
   mid() {
     const { lo, hi } = this;
@@ -98,42 +99,56 @@ const sortEdges = () => {
 };
 
 const kruskal = () => {
-  const ret = new Array(q).fill(undefined).map(() => [-1, -1]);
-  const ranges: Range[] = Array.from({ length: q }).map(
-    () => new Range(0, m + 1)
-  );
-
+  const ret = Array.from({ length: q }).map(() => [-1, -1]);
+  const ranges = Array.from({ length: q }).map(() => new Range(0, m + 1));
   while (true) {
-    let isRenewed = false;
-    const queryIndicesWith: number[][] = Array.from({ length: m + 1 }).map(
-      () => []
-    );
-    for (let queryIdx = 0; queryIdx < q; queryIdx++) {
-      const range = ranges[queryIdx];
-      if (range.isDone()) continue;
-      isRenewed = true;
-      const mid = range.mid();
-      queryIndicesWith[mid].push(queryIdx);
-    }
+    const { isRenewed, queryIndicesWith } = initializeMid(ranges);
     if (!isRenewed) break;
+    parametricSearch(ret, queryIndicesWith, ranges);
+  }
+  return serialize(ret);
+};
 
-    const disjointSet = new DisjointSet(n);
-    for (let i = 0; i < m; i++) {
-      const [u, v, c] = edges[i];
-      disjointSet.merge(u, v);
-      const mid = i + 1;
-      for (const queryIdx of queryIndicesWith[mid]) {
-        const [x, y] = queries[queryIdx];
-        if (disjointSet.isConnected(x, y)) {
-          ranges[queryIdx].hi = mid;
-          ret[queryIdx] = [c, disjointSet.getSize(x)];
-        } else {
-          ranges[queryIdx].lo = mid;
-        }
+const initializeMid = (ranges: Range[]) => {
+  let isRenewed = false;
+  const queryIndicesWith: number[][] = Array.from({ length: m + 1 }).map(
+    () => []
+  );
+  for (let queryIdx = 0; queryIdx < q; queryIdx++) {
+    const range = ranges[queryIdx];
+    if (range.isDone()) continue;
+
+    isRenewed = true;
+    const mid = range.mid();
+    queryIndicesWith[mid].push(queryIdx);
+  }
+  return { isRenewed, queryIndicesWith };
+};
+
+const parametricSearch = (
+  ret: number[][],
+  queryIndices: number[][],
+  ranges: Range[]
+) => {
+  const disjointSet = new DisjointSet(n);
+  for (let i = 0; i < m; i++) {
+    const [u, v, c] = edges[i];
+    disjointSet.merge(u, v);
+    const usedEdgeCount = i + 1;
+    for (const queryIdx of queryIndices[usedEdgeCount]) {
+      const [x, y] = queries[queryIdx];
+      const range = ranges[queryIdx];
+      if (disjointSet.isConnected(x, y)) {
+        range.hi = usedEdgeCount;
+        ret[queryIdx] = [c, disjointSet.getSize(x)];
+      } else {
+        range.lo = usedEdgeCount;
       }
     }
   }
+};
 
+const serialize = (ret: number[][]) => {
   return ret.map(([c, v]) => (c === -1 ? "-1" : `${c} ${v}`)).join("\n");
 };
 
