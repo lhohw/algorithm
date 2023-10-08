@@ -112,21 +112,20 @@ const bfs = () => {
 
 const dfs = (here: number, amount: number): number => {
   if (here === SINK) return amount;
-  for (let i = start[here]; i < adj[here].length; i++) {
-    const there = adj[here][i];
+
+  while (start[here] < adj[here].length) {
+    const there = adj[here][start[here]];
     if (level[there] === level[here] + 1 && residualCapacity(here, there) > 0) {
       amount = Math.min(amount, residualCapacity(here, there));
       const ret = dfs(there, amount);
       if (ret > 0) {
         flow[here][there] += ret;
         flow[there][here] -= ret;
-
-        start[here] = i;
         return ret;
       }
     }
+    start[here]++;
   }
-  start[here] = adj[here].length;
   return 0;
 };
 
