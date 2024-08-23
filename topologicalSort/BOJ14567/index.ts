@@ -36,31 +36,36 @@ export const createGraph = (...props: Props) => {
 export const topologicalSort = (n: Props[0], graph: number[][]) => {
   const sortedArray: number[] = [];
   const visited: boolean[] = new Array(n).fill(false);
+  const stack: number[] = [];
+  const next = new Array(n).fill(0);
+
+  const visit = (here: number) => {
+    stack.push(here);
+    visited[here] = true;
+  };
 
   for (let i = 0; i < n; i++) {
     if (visited[i]) continue;
 
-    visited[i] = true;
-    dfs(i, graph, visited, sortedArray);
+    visit(i);
+
+    while (stack.length) {
+      const here = stack.pop()!;
+      const nextIdx = next[here];
+      const there = graph[here][nextIdx];
+
+      if (there !== undefined) {
+        stack.push(here);
+        if (!visited[there]) visit(there);
+      } else {
+        sortedArray.push(here);
+      }
+
+      next[here]++;
+    }
   }
 
   return sortedArray.reverse();
-};
-
-export const dfs = (
-  here: number,
-  graph: number[][],
-  visited: boolean[],
-  sortedArray: number[]
-) => {
-  for (const there of graph[here]) {
-    if (visited[there]) continue;
-
-    visited[there] = true;
-    dfs(there, graph, visited, sortedArray);
-  }
-
-  sortedArray.push(here);
 };
 
 export const traverse = (
