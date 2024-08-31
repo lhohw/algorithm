@@ -26,10 +26,10 @@ export const createGraph = (n: number, edges: number[][]) => {
 };
 
 export const bfs = (n: number, graph: number[][]) => {
-  const queue: number[] = [];
+  let ret = 0;
   let queueIdx = 0;
+  const queue: number[] = [];
   const depth = new Array(n).fill(0);
-  let totalDepth = 0;
 
   queue.push(0);
   depth[0] = 1;
@@ -46,10 +46,10 @@ export const bfs = (n: number, graph: number[][]) => {
       queue.push(there);
     }
 
-    if (isLeaf) totalDepth += depth[here] - 1;
+    if (isLeaf) ret += depth[here] - 1;
   }
 
-  return totalDepth;
+  return ret;
 };
 
 export const serialize = (total: number) => (total % 2 === 0 ? "No" : "Yes");
