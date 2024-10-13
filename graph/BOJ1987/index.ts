@@ -4,104 +4,100 @@ const dy = [-1, 0, 1, 0];
 const dx = [0, 1, 0, -1];
 
 class Board {
-  private here = [0, 0];
-  private charset = new Set<string>();
-  private ret = 0;
+  private board: number[][];
 
-  constructor(private n: number, private m: number, private board: string[]) {
-    this.visit(0, 0);
+  constructor(private n: number, private m: number, _board: string[]) {
+    this.board = Array.from({ length: n }, () => new Array(m).fill(0));
+    this.init(_board);
   }
 
-  dfs() {
-    const { here } = this;
-    const [y, x] = here;
+  private init(_board: string[]) {
+    const { n, m, board } = this;
 
-    this.update();
+    for (let y = 0; y < n; y++) {
+      for (let x = 0; x < m; x++) {
+        board[y][x] = parseInt(_board[y][x], 36) - 10;
+      }
+    }
+  }
 
+  isOut(y: number, x: number) {
+    const { n, m } = this;
+
+    return y < 0 || y >= n || x < 0 || x >= m;
+  }
+
+  getChar(y: number, x: number) {
+    return this.board[y][x];
+  }
+}
+
+class CharHandler {
+  char = 0;
+  charCnt = 0;
+  max = 0;
+
+  add(chIdx: number) {
+    this.char |= 1 << chIdx;
+    this.charCnt++;
+
+    this.max = Math.max(this.max, this.charCnt);
+  }
+
+  remove(chIdx: number) {
+    this.char ^= 1 << chIdx;
+    this.charCnt--;
+  }
+
+  hasChar(chIdx: number) {
+    return this.char & (1 << chIdx);
+  }
+
+  getMax() {
+    return this.max;
+  }
+}
+
+export const parseInput = (input: string) => {
+  const board = input.split("\n");
+
+  const [n, m] = board.shift()!.split(" ").map(Number);
+  return { n, m, board };
+};
+
+export const solve = (n: number, m: number, _board: string[]) => {
+  const board = new Board(n, m, _board);
+  const charHandler = new CharHandler();
+
+  charHandler.add(board.getChar(0, 0));
+
+  const dfs = (y: number, x: number) => {
     for (let d = 0; d < 4; d++) {
       const ny = y + dy[d];
       const nx = x + dx[d];
 
-      if (this.isOut(ny, nx)) continue;
+      if (board.isOut(ny, nx)) continue;
 
-      const ch = this.getChar(ny, nx);
-      if (this.isVisited(ch)) continue;
+      const chIdx = board.getChar(ny, nx);
+      if (charHandler.hasChar(chIdx)) continue;
 
-      this.visit(ny, nx);
-      this.dfs();
-      this.return(ny, nx, y, x);
+      charHandler.add(chIdx);
+      dfs(ny, nx);
+      charHandler.remove(chIdx);
     }
-  }
-
-  getMax() {
-    return this.ret;
-  }
-
-  private move(y: number, x: number) {
-    this.here = [y, x];
-  }
-
-  private isVisited(ch: string) {
-    const { charset } = this;
-    return charset.has(ch);
-  }
-
-  private visit(y: number, x: number) {
-    const { charset } = this;
-    const ch = this.getChar(y, x);
-
-    charset.add(ch);
-    this.move(y, x);
-  }
-
-  private return(ny: number, nx: number, y: number, x: number) {
-    const { charset } = this;
-    const ch = this.getChar(ny, nx);
-
-    charset.delete(ch);
-    this.move(y, x);
-  }
-
-  private update() {
-    const { charset } = this;
-    this.ret = Math.max(this.ret, charset.size);
-  }
-
-  private getChar(y: number, x: number) {
-    const { board } = this;
-    return board[y][x];
-  }
-
-  private isOut(y: number, x: number) {
-    const { n, m } = this;
-    return y < 0 || y >= n || x < 0 || x >= m;
-  }
-}
-
-export const run = () => {
-  const parseInput = (input: string) => input.split("\n");
-
-  const solve = (input: string[]) => {
-    const [n, m] = input.shift()!.split(" ").map(Number);
-    const board = new Board(n, m, input);
-
-    board.dfs();
-    return board.getMax();
   };
 
-  return {
-    parseInput,
-    solve,
-  };
+  dfs(0, 0);
+
+  return charHandler.getMax();
 };
 
 const print = () => {
   const input = readFileSync("/dev/stdin").toString().trim();
-  const { parseInput, solve } = run();
-  const params = parseInput(input);
-  const ret = solve(params);
+  const { n, m, board } = parseInput(input);
+  const ret = solve(n, m, board);
 
   console.log(ret.toString());
 };
 
-// print();
+print();
